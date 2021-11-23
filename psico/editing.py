@@ -254,7 +254,7 @@ DESCRIPTION
     cmd.cartoon('auto', selection)
     cmd.rebuild(selection, 'cartoon')
 
-def dssp(selection='(all)', exe='', raw='', state=-1, quiet=1):
+def dssp(selection='(all)', exe='', raw='custom', state=-1, quiet=1, color=1):
     '''
 DESCRIPTION
 
@@ -289,11 +289,12 @@ SEE ALSO
     import tempfile, os
     from .exporting import save_pdb_without_ter
 
-    state, quiet = int(state), int(quiet)
+    state, quiet, color = int(state), int(quiet), int(color)
 
     if exe == '':
         _assert_package_import()
         from . import which
+        os.environ["PATH"] = "/opt/homebrew/bin:/usr/local/bin:$PATH"
         exe = which('dsspcmbi', 'dssp', 'dssp-2', 'mkdssp')
     ss_map = {
         'B': 'S', # residue in isolated beta-bridge
@@ -325,6 +326,27 @@ SEE ALSO
             ss_dict[model,chain,resi] = ss
     os.remove(tmpfilepdb)
     _common_ss_alter(selection, ss_dict, ss_map, raw)
+    if color == 1:
+        cmd.color('gray', selection)
+        cmd.set_color('H_color', [220, 50, 47])
+        cmd.color('H_color', raw+' H')
+        cmd.set_color('G_color', [211, 54, 130])
+        cmd.color('G_color', raw+' G')
+        cmd.set_color('I_color', [255, 170, 170])
+        cmd.color('I_color', raw+' I')
+        cmd.set_color('E_color', [196, 177, 3])
+        cmd.color('E_color', raw+' E')
+        cmd.set_color('B_color', [42, 161, 152])
+        cmd.color('B_color', raw+' B')
+        cmd.set_color('T_color', [38, 139, 210])
+        cmd.color('T_color', raw+' T')
+        cmd.set_color('G_color', [211, 54, 130])
+        cmd.color('G_color', raw+' G')
+        cmd.set_color('S_color', [133, 153, 0])
+        cmd.color('S_color', raw+' S')
+        cmd.set('cartoon_discrete_colors', '1')
+        cmd.util.cnc(selection)
+
 
 def stride(selection='(all)', exe='stride', raw='', state=-1, quiet=1):
     '''
