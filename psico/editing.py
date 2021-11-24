@@ -587,6 +587,51 @@ DESCRIPTION
     for name in tmp_names:
         cmd.delete(name)
 
+def plddt(selection='(all)', scheme="AlphaFoldDB", lower=50.0, upper=90.0, cnc=0):
+    '''
+DESCRIPTION
+
+    Coloring by per-resude predicted LDDT (pLDDT) scores.
+    (see Jumper et al. 2021 https://doi.org/10.1038/s41586-021-03819-2
+     Suppl. Methods 1.9.6 for details)
+    Note: The pLDDT score is embedded in the B-factor column of the PDB
+    output from AlphaFold version 2.
+
+ARGUMENTS
+
+    selection = string: atom selection {default: (all)}
+
+    scheme = string: Coloring scheme. AlphaFoldDB or spectrum {default: AlphaFoldDB}.
+
+    lower = float: minimum of spectrum {default: 50.0}
+
+    upper = float: maximum of spectrum {default: 90.0}
+
+    cnc = 0/1
+
+SEE ALSO
+
+    spectrum
+    '''
+    if scheme == "AlphaFoldDB":
+        cmd.set_color("very_high", [0.051, 0.341, 0.827])
+        cmd.set_color("confident", [0.416, 0.796, 0.945])
+        cmd.set_color("low", [0.996, 0.851, 0.212])
+        cmd.set_color("very_low", [0.992, 0.490, 0.302])
+        cmd.color("very_high", "b < 100")
+        cmd.color("confident", "b < 90")
+        cmd.color("low", "b < 70")
+        cmd.color("very_low", "b < 50")
+        cmd.set('cartoon_discrete_colors', '1')
+        cmd.util.cnc(selection)
+    elif scheme == "spectrum":
+        lower, upper = float(lower), float(upper)
+        cmd.spectrum("b", "red_yellow_green_cyan_blue", selection, lower, upper)
+        cmd.util.cnc(selection)
+    else:
+        print("scheme is not valid. Use 'AlphaFoldDB' (default) or 'spectrum'.")
+
+
 if 'split_chains' not in cmd.keyword:
     cmd.extend('split_chains', split_chains)
 cmd.extend('split_molecules', split_molecules)
@@ -604,6 +649,7 @@ cmd.extend('stride', stride)
 cmd.extend('dss_promotif', dss_promotif)
 cmd.extend('sst', sst)
 cmd.extend('set_phipsi', set_phipsi)
+cmd.extend('plddt', plddt)
 cmd.extend('update_identifiers', update_identifiers)
 
 # tab-completion of arguments
@@ -620,6 +666,7 @@ cmd.auto_arg[0].update({
     'dss_promotif'   : cmd.auto_arg[0]['zoom'],
     'sst'            : cmd.auto_arg[0]['zoom'],
     'set_phipsi'     : cmd.auto_arg[0]['zoom'],
+    'plddt'          : cmd.auto_arg[0]['zoom'],
 })
 cmd.auto_arg[1].update({
     'set_sequence'   : cmd.auto_arg[0]['zoom'],
