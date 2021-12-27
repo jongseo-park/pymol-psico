@@ -294,7 +294,7 @@ SEE ALSO
     if exe == '':
         _assert_package_import()
         from . import which
-        os.environ["PATH"] = "/opt/homebrew/bin:/usr/local/bin:$PATH"
+        # os.environ["PATH"] = "/opt/homebrew/bin:/usr/local/bin:$PATH"
         exe = which('dsspcmbi', 'dssp', 'dssp-2', 'mkdssp')
     ss_map = {
         'B': 'S', # residue in isolated beta-bridge
